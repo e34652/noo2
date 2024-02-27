@@ -108,7 +108,7 @@
 		
 		<script>
 		function move(){
-		location.href="memberInputForm.jsp";
+		location.href="memberForm.jsp";
 		}
 		</script>
 </body>

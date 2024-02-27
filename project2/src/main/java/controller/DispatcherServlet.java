@@ -62,7 +62,7 @@ public class DispatcherServlet extends HttpServlet {
 		String path = uri.substring(uri.lastIndexOf("/"));
 
 		// 요청에 따른 조건문 작성
-		if (path.equals("/list.do")) {
+		if (path.equals("/memberList.do")) {
 			MemberDao mdao = MemberDao.getInstance();
 
 			String pageNoval = request.getParameter("pageNo");
@@ -75,7 +75,7 @@ public class DispatcherServlet extends HttpServlet {
 			ArticlePage articlePage = new ArticlePage(total, pageNo, 5, null, list);
 			request.setAttribute("Article", articlePage);
 
-			RequestDispatcher dispatcher = request.getRequestDispatcher("/list.jsp");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/view/memberList.jsp");
 			dispatcher.forward(request, response);
 
 		} else if (path.equals("/view.do")) {
@@ -96,8 +96,7 @@ public class DispatcherServlet extends HttpServlet {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/view/view.jsp");
 			dispatcher.forward(request, response);
 
-		} else if (path.equals("/login.do")) {
-
+		} else if (path.equals("/memberLogin.do")) {
 			// 요청은 사용자가 URL을 입력하거나, 링크를 클릭하거나, 폼을 제출하는 등의 동작을 통해 생성됨
 			// 사용자의 요청(request)에 포함되어있는 id라는 파라미터를 get하여 id에 저장,
 			String id = request.getParameter("id");
@@ -105,44 +104,30 @@ public class DispatcherServlet extends HttpServlet {
 			Member member = MemberDao.getInstance().selectForLogin(id, email);
 			if (member != null) {
 				HttpSession session = request.getSession(); // 세션 생성, 또는 이미 생성된 세션을 불러옴, 일반적으로 하나의 연결에서 하나의 세션만을 가짐
+				if(member.getId().equals("admin")) {
 				session.setAttribute("member", member);
-				response.sendRedirect("list.do");
+				response.sendRedirect("memberList.do");
+				}else {
+					session.setAttribute("member", member);
+					response.sendRedirect("BoardList.do");
+				}
 			} else {
-				response.sendRedirect("loginForm.jsp");
+				response.sendRedirect("memberLoginForm.do");
 			}
-		} else if (path.equals("/logout.do")) {
+			
+		} else if (path.equals("/memberLogout.do")) {
 			HttpSession session = request.getSession(false);
 			session.invalidate();
-			response.sendRedirect("loginForm.do");
+			response.sendRedirect("memberLoginForm.do");
 
-		} else if (path.equals("/loginForm.do")) {
-			response.sendRedirect("loginForm.jsp");
-
-		} else if (path.equals("/write.do")) {
-
-			String tmp = request.getParameter("num");
-			int num = (tmp != null && tmp.length() > 0) ? Integer.parseInt(tmp) : 0;
-			// 항상 null이나 빈 값을 어떻게 처리할지 잊지 말아야 한다
-
-			String action = "insert.do";
-			Board board = null;
-
-			// 글 번호가 주어졌으면, 수정(update.do)으로 변경
-			if (num > 0) {
-				BoardDao dao = BoardDao.getInstance();
-				board = dao.selectOne(num, false);
-				action = "update.do?num=" + num;
-			}
-			request.setAttribute("board", board);
-			request.setAttribute("action", action);
-			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/view/write.jsp");
-			dispatcher.forward(request, response);
-			
-		} else if (path.equals("/delete.do")) {
+		} else if (path.equals("/memberLoginForm.do")) {
+			response.sendRedirect("memberLoginForm.jsp");
+		
+		} else if (path.equals("/memberDelete.do")) {
 			int memberno = Integer.parseInt(request.getParameter("memberno"));
 			MemberDao mdao = MemberDao.getInstance();
 			mdao.delete(memberno);
-			response.sendRedirect("list.do");
+			response.sendRedirect("memberList.do");
 			
 		} else if (path.equals("/memberUpdate.do")) {
 			
@@ -155,19 +140,19 @@ public class DispatcherServlet extends HttpServlet {
 			Member member = new Member(memberno, id, email, name);
 			mdao.update(member);
 			
-			response.sendRedirect("list.do");
+			response.sendRedirect("memberList.do");
 			
-		} else if (path.equals("/updateForm.do")) {
+		} else if (path.equals("/memberUpdateForm.do")) {
 			int memberno = Integer.parseInt(request.getParameter("memberno"));
 			
 			MemberDao mdao = MemberDao.getInstance();
 			Member member = mdao.selectMember(memberno);
 			request.setAttribute("member", member);
 			request.setCharacterEncoding("UTF-8");
-			RequestDispatcher dispatcher = request.getRequestDispatcher("/memberUpdateForm.jsp");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/member/memberUpdateForm.jsp");
 			dispatcher.forward(request, response);
 			
-		}else if (path.equals("/memberInput.do")) {
+		}else if (path.equals("/memberInsert.do")) {
 			
 			String id = request.getParameter("id");
 			String email = request.getParameter("email");
@@ -176,7 +161,7 @@ public class DispatcherServlet extends HttpServlet {
 			MemberDao mdao = MemberDao.getInstance();
 			Member member = new Member(0, id, email, name);
 			mdao.insert(member);
-			response.sendRedirect("/loginForm.jsp");
+			response.sendRedirect("/memberLoginForm.do");
 
 			
 		}

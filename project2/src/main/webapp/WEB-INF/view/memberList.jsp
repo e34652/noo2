@@ -3,7 +3,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-
+<%request.setCharacterEncoding("UTF-8");%>
 
 <!doctype html>
 <html lang="ko">
@@ -54,62 +54,74 @@
 		</div>
 	</nav>
 	<div class="container" style="padding-top: 50px">
-		<h1>Hello, world!</h1>
 		<table class="table table-bordered table-hover">
 			<thead>
 				<tr>
-					<th scope="col">memberno</th>
+					<th scope="col">Memberno</th>
 					<th scope="col">ID</th>
 					<th scope="col">Email</th>
 					<th scope="col">Name</th>
-					
+					<th scope="col">Actions</th>
 				</tr>
 			</thead>
 			<tbody>
-
+				<c:forEach var="member" items="${Article.contentM}">
+					<tr>
+						<td>${member.memberno}</td>
+						<td><a href="view.do?num=${member.memberno}"><c:out value="${member.id}"/></a></td>
+						<td>${member.email}</td>
+						<td>${member.name}</td>
+						<td><a href="updateForm.do?memberno=${member.memberno}">수정</a>
+							<a href="delete.do?memberno=${member.memberno}"
+							class="btn btn-warning">삭제</a></td>
+					</tr>
+				</c:forEach>
 			</tbody>
-			<c:if test="${ArticlePage.hasNoArticles()}">
-				<tr>
-					<td colspan="4">게시글이 없습니다.</td>
-				</tr>
-			</c:if>
-			<c:forEach var="articlePage" items="${ArticlePage.comtentM}">
-				<tr>
-					<td>${articlePage.memberno}</td>
-					<td><a href="view.do?num=${ArticlePage.memberno}"> <c:out value="${articlePage.id}" /></a></td>
-					<td>${articlePage.email}</td>
-					<td>${articlePage.name}</td>
-					<td><a href="updateForm.jsp?memberno=${articlePage.memberno}">수정</a></td>
-					<td><button class="btn btn-warning" onClick='location.href="delete.jsp?memberno=${articlePage.memberno}"'>삭제</button>
-					</td>
-				</tr>
-			
-				
-			</c:forEach>
-			<c:if test="${ArticlePage.hasArticles()}">
-				<tr>
-					<td colspan="5"><c:if test="${ArticlePage.startPage > 5}">
-							<a href="list.do?pageNo=${ArticlePage.startPage - 5}">[이전]</a>
-						</c:if> <c:forEach var="pNo" begin="${ArticlePage.startPage}"
-							end="${ArticlePage.endPage}">
-							<a href="list.do?pageNo=${pNo}">[${pNo}]</a>
-						</c:forEach> <c:if test="${ArticlePage.endPage < ArticlePage.totalPages}">
-							<a href="list.do?pageNo=${ArticlePage.startPage + 5}">[다음]</a>
-						</c:if></td>
-				</tr>
-			</c:if>
 		</table>
-		<button class="btn btn-secondary" onclick="move()">회원 등록</button>
 	</div>
+	<div>
+		<c:if test="${Article.hasNoArticles()}">
+			<tr>
+				<td colspan="4">게시글이 없습니다.</td>
+			</tr>
+		</c:if>
+	</div>
+	<div class ="container">
+		<c:if test="${Article.hasArticles()}">
+			<tr>
+				<td colspan="5"><c:if test="${Article.startPage > 5}">
+						<a href="list.do?pageNo=${Article.startPage - 5}">[이전]</a>
+					</c:if> <c:forEach var="pNo" begin="${Article.startPage}"
+						end="${Article.endPage}">
+						<a href="list.do?pageNo=${pNo}">[${pNo}]</a>
+					</c:forEach> <c:if test="${Article.endPage < Article.totalPages}">
+						<a href="list.do?pageNo=${Article.startPage + 5}">[다음]</a>
+					</c:if></td>
+			</tr>
+		</c:if>
+		
+	</div>
+	<button class="btn btn-secondary" onclick="move()">회원 등록</button>
+	
+
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
 		integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
 		crossorigin="anonymous"></script>
-		
-		<script>
-		function move(){
-		location.href="memberInputForm.jsp";
+
+	<script>
+		function move() {
+			location.href = "memberForm.jsp";
 		}
-		</script>
+		function addRow(conent) {
+			let table = document.getElementById("myTable");
+			table.innerHTML = conent
+		}
+
+		window.onload = function() {
+			let data = `<tr><td><a href="http://www.naver.com">네이버</a></td></tr> <tr><td>abcd</td></tr>`;
+			addRow(data);
+		}
+	</script>
 </body>
 </html>
