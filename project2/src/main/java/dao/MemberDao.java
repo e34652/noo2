@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import javax.servlet.http.HttpSession;
 
 import dto.Board;
 import dto.Member;
@@ -75,7 +76,7 @@ public class MemberDao {
 				pstmt.setString(1, id);
 				pstmt.setString(2, email);
 				ResultSet rs = pstmt.executeQuery();
-
+			
 				if (rs.next()) {
 					member = new Member(rs.getString("id"), rs.getString("email"),
 							rs.getString("name"));
@@ -99,8 +100,7 @@ public class MemberDao {
 				ResultSet rs = pstmt.executeQuery();
 
 				if (rs.next()) {
-					member = new Member(rs.getInt("memberno"), rs.getString("id"), rs.getString("email"),
-							rs.getString("name"));
+					member = new Member(rs.getInt("memberno"), rs.getString("id"), rs.getString("email"), rs.getString("name"));
 				}
 				
 			} catch (SQLException e) {

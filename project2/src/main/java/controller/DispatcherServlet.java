@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,12 +58,15 @@ public class DispatcherServlet extends HttpServlet {
 	private void process(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// 클라이언트가 어떤 요청을 했는지 알기위해 url의 일부를 추출
-		
+
 		String uri = request.getRequestURI();
 		String path = uri.substring(uri.lastIndexOf("/"));
 
 		// 요청에 따른 조건문 작성
-		if (path.equals("/memberList.do")) {
+		if(path.equals("/index.do")){
+			
+				
+	}else if (path.equals("/memberList.do")) {
 			MemberDao mdao = MemberDao.getInstance();
 
 			String pageNoval = request.getParameter("pageNo");
@@ -75,10 +79,10 @@ public class DispatcherServlet extends HttpServlet {
 			ArticlePage articlePage = new ArticlePage(total, pageNo, 5, null, list);
 			request.setAttribute("Article", articlePage);
 
-			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/view/memberList.jsp");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/memberview/memberList.jsp");
 			dispatcher.forward(request, response);
 
-		} else if (path.equals("/view.do")) {
+		} else if (path.equals("/boardView.do")) {
 			// num과 일치하는 행 불러오기
 			int num = Integer.parseInt(request.getParameter("num"));
 			BoardDao dao = BoardDao.getInstance();
@@ -93,7 +97,7 @@ public class DispatcherServlet extends HttpServlet {
 
 			// 포워딩 작업
 			request.setAttribute("bd", board);
-			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/view/view.jsp");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/boardview/view.jsp");
 			dispatcher.forward(request, response);
 
 		} else if (path.equals("/memberLogin.do")) {
@@ -101,69 +105,111 @@ public class DispatcherServlet extends HttpServlet {
 			// 사용자의 요청(request)에 포함되어있는 id라는 파라미터를 get하여 id에 저장,
 			String id = request.getParameter("id");
 			String email = request.getParameter("email");
+			String check = request.getParameter("radio");
+			
 			Member member = MemberDao.getInstance().selectForLogin(id, email);
-			if (member != null) {
-				HttpSession session = request.getSession(); // 세션 생성, 또는 이미 생성된 세션을 불러옴, 일반적으로 하나의 연결에서 하나의 세션만을 가짐
-				if(member.getId().equals("admin")) {
-				session.setAttribute("member", member);
-				response.sendRedirect("memberList.do");
-				}else {
-					session.setAttribute("member", member);
+			if (member.getId() != null) {
+				HttpSession session = request.getSession();
+				session.setAttribute("Member", member);
+
+				if (member.getId().equals("admin")) { // 일치하는 회원이 있는 경우
+					session.setMaxInactiveInterval(1800);
+					response.sendRedirect("memberList.do");
+					
+				} else if (check.equals("login")) { // 회원의 ID가 admin인 경우 관리자 페이지로 이동
+					String loginInfo = String.format("%s/%s", member.getId(), member.getEmail());
+					session.setAttribute("login", member);
+					Cookie cookie = new Cookie("autoLogin", loginInfo);
+					cookie.setMaxAge(60 * 60 * 24 * 15);
+					cookie.setPath("/");
+					response.addCookie(cookie);
+					response.sendRedirect("BoardList.do");
+				} else if (check.equals("id")) { // 회원의 ID가 admin인 경우 관리자 페이지로 이동
+					String loginInfo = String.format("%s/%s", member.getId(), member.getEmail());
+					session.setAttribute("login", member);
+					Cookie cookie = new Cookie("autoLogin", loginInfo);
+					cookie.setMaxAge(60 * 60 * 24 * 15);
+					cookie.setPath("/");
+					response.addCookie(cookie);
+					response.sendRedirect("BoardList.do");
+				} else {
 					response.sendRedirect("BoardList.do");
 				}
 			} else {
 				response.sendRedirect("memberLoginForm.do");
 			}
-			
+
+	//memberLogout		
 		} else if (path.equals("/memberLogout.do")) {
 			HttpSession session = request.getSession(false);
-			session.invalidate();
+
+			if (session != null) {
+				session.invalidate();
+
+				Cookie cookie = new Cookie("autoLogin", "");
+				cookie.setMaxAge(0);
+				cookie.setPath("/"); // 쿠키의 경로를 설정하여 해당 경로의 모든 페이지에서 쿠키가 제거되도록 함
+				response.addCookie(cookie);
+			}
 			response.sendRedirect("memberLoginForm.do");
 
 		} else if (path.equals("/memberLoginForm.do")) {
+			Cookie[] cookies = request.getCookies();
+
+			if (cookies != null) {
+				for (Cookie cookie : cookies) {
+					if (cookie.getName().equals("userId")) { // 원하는 쿠키 이름 확인
+						String checkValue = cookie.getValue(); // 쿠키 값 가져오기
+						if (checkValue.equals("on")) {
+							HttpSession session = request.getSession(true);
+							session.setAttribute("checkValue", true);
+						}
+					}
+				}
+			}
+
 			response.sendRedirect("memberLoginForm.jsp");
-		
+
 		} else if (path.equals("/memberDelete.do")) {
 			int memberno = Integer.parseInt(request.getParameter("memberno"));
 			MemberDao mdao = MemberDao.getInstance();
 			mdao.delete(memberno);
 			response.sendRedirect("memberList.do");
-			
+
 		} else if (path.equals("/memberUpdate.do")) {
-			
+
 			int memberno = Integer.parseInt(request.getParameter("memberno"));
 			String id = request.getParameter("id");
 			String email = request.getParameter("email");
 			String name = request.getParameter("name");
-			
+
 			MemberDao mdao = MemberDao.getInstance();
 			Member member = new Member(memberno, id, email, name);
 			mdao.update(member);
-			
+
 			response.sendRedirect("memberList.do");
-			
+
 		} else if (path.equals("/memberUpdateForm.do")) {
 			int memberno = Integer.parseInt(request.getParameter("memberno"));
-			
+
 			MemberDao mdao = MemberDao.getInstance();
 			Member member = mdao.selectMember(memberno);
 			request.setAttribute("member", member);
 			request.setCharacterEncoding("UTF-8");
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/member/memberUpdateForm.jsp");
 			dispatcher.forward(request, response);
-			
-		}else if (path.equals("/memberInsert.do")) {
-			
+
+		} else if (path.equals("/memberInsert.do")) {
+
 			String id = request.getParameter("id");
 			String email = request.getParameter("email");
 			String name = request.getParameter("name");
-			
+
 			MemberDao mdao = MemberDao.getInstance();
 			Member member = new Member(0, id, email, name);
 			mdao.insert(member);
 			response.sendRedirect("/memberLoginForm.do");
 
-			
 		}
 	}
 }
