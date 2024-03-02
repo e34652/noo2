@@ -43,8 +43,8 @@ public class AutoLoginFilter extends HttpFilter implements Filter {
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpSession session = httpRequest.getSession(false);
-        if (session != null && session.getAttribute("Member") != null) {
+        HttpSession session = httpRequest.getSession(true);
+        if (session.getAttribute("login") != null) {
             chain.doFilter(request, response);
             return;
         }
@@ -57,11 +57,11 @@ public class AutoLoginFilter extends HttpFilter implements Filter {
 	            for (Cookie cookie : cookies) {
 	                if (cookie.getName().equals("AutoLogin")) {
 	                	String input = cookie.getValue();
-	                	String[] loginInfo = input.split(",");
+	                	String[] loginInfo = input.split("/");
 	                	id = loginInfo[0];
 	                	email = loginInfo[1];
 	                	Member member = MemberDao.getInstance().selectForLogin(id, email);
-	                	session.setAttribute("Member", member);
+	                	session.setAttribute("login", member);
 	                }
 	            }
 	        }

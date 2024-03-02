@@ -3,7 +3,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%request.setCharacterEncoding("UTF-8");%>
+<%
+request.setCharacterEncoding("UTF-8");
+%>
 
 <!doctype html>
 <html lang="ko">
@@ -55,7 +57,7 @@
 	</nav>
 	<div class="container" style="padding-top: 50px">
 		<table class="table table-bordered table-hover">
-			<thead>
+			
 				<tr>
 					<th scope="col">Memberno</th>
 					<th scope="col">ID</th>
@@ -63,46 +65,51 @@
 					<th scope="col">Name</th>
 					<th scope="col">Actions</th>
 				</tr>
-			</thead>
-			<tbody>
+			
+		
+				<c:if test="${Article.hasNoArticles()}">
+					<tr>
+						<td colspan="4">게시글이 없습니다.</td>
+					</tr>
+				</c:if>
 				<c:forEach var="member" items="${Article.contentM}">
 					<tr>
 						<td>${member.memberno}</td>
-						<td><a href="view.do?num=${member.memberno}"><c:out value="${member.id}"/></a></td>
+						<td><a href="view.do?num=${member.memberno}"><c:out
+									value="${member.id}" /></a></td>
 						<td>${member.email}</td>
 						<td>${member.name}</td>
-						<td><a href="updateForm.do?memberno=${member.memberno}">수정</a>
-							<a href="delete.do?memberno=${member.memberno}"
+						<td><a href="memberUpdateForm.do?memberno=${member.memberno}">수정</a>
+							<a href="memberDelete.do?memberno=${member.memberno}"
 							class="btn btn-warning">삭제</a></td>
 					</tr>
 				</c:forEach>
-			</tbody>
-		</table>
+		
 	</div>
-	<div>
-		<c:if test="${Article.hasNoArticles()}">
-			<tr>
-				<td colspan="4">게시글이 없습니다.</td>
-			</tr>
-		</c:if>
-	</div>
-	<div class ="container">
+
+	<div class="container">
 		<c:if test="${Article.hasArticles()}">
 			<tr>
-				<td colspan="5"><c:if test="${Article.startPage > 5}">
-						<a href="list.do?pageNo=${Article.startPage - 5}">[이전]</a>
-					</c:if> <c:forEach var="pNo" begin="${Article.startPage}"
+				<td colspan="5">
+					<c:if test="${Article.startPage > 5}">
+						<a href="memberList.do?pageNo=${Article.startPage - 5}">[이전]</a>
+					</c:if> 
+					
+					<c:forEach var="pNo" begin="${Article.startPage}"
 						end="${Article.endPage}">
-						<a href="list.do?pageNo=${pNo}">[${pNo}]</a>
-					</c:forEach> <c:if test="${Article.endPage < Article.totalPages}">
-						<a href="list.do?pageNo=${Article.startPage + 5}">[다음]</a>
+						<a href="memberList.do?pageNo=${pNo}">[${pNo}]</a>
+					</c:forEach> 
+					
+					<c:if test="${Article.endPage < Article.totalPages}">
+						<a href="memberList.do?pageNo=${Article.startPage + 5}">[다음]</a>
 					</c:if></td>
 			</tr>
 		</c:if>
-		
+
 	</div>
+	</table>
 	<button class="btn btn-secondary" onclick="move()">회원 등록</button>
-	
+
 
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
@@ -111,7 +118,7 @@
 
 	<script>
 		function move() {
-			location.href = "memberForm.jsp";
+			location.href = "memberSignUpForm.do";
 		}
 		function addRow(conent) {
 			let table = document.getElementById("myTable");

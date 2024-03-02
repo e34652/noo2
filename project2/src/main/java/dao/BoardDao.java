@@ -20,16 +20,16 @@ public class BoardDao {
 	
 	private static void getConnection() {
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(
-	        		"jdbc:mysql://localhost:3306/project1", "root", "mysql");
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "scott", "tiger");
 
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}		
 	}
 	
-	public int selectCount() {  // board 테이블의 총 건수를 리턴함
+	// 페이징 할 때 필요한 총 게시글 수
+	public int selectCount() {  
 		String sql = "select count(*) from board";
 		PreparedStatement pstmt;
 		try {
@@ -37,7 +37,7 @@ public class BoardDao {
 			ResultSet rs = pstmt.executeQuery();
 			
 			if (rs.next()) {
-				return rs.getInt(1); // 첫번째 열의 Int값을 리턴
+				return rs.getInt(1); // 
 			}
 			
 		} catch (SQLException e) {
@@ -47,21 +47,24 @@ public class BoardDao {
 		
 	}
 	
-	public ArrayList<Board> select(int startRow, int size) {
+	//BoardList 페이징 
+	public ArrayList<Board> selectPage(int startRow, int size) {
 		ArrayList<Board> list = new ArrayList<>();
-		String sql = "select * from board order by num desc limit ?,?"; // 오라클은 여기만 수정
+		String sql = "select b.*, m.name from board b left join member m on b.memberno = m.memberno order by num desc"; // 오라클 쿼리문 필요
+		//String sql = "select * from board order by num desc limit ?,?"; // 오라클은 여기만 수정
 		PreparedStatement pstmt;
 		try {
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, startRow);
-			pstmt.setInt(2, size);
+//			pstmt.setInt(1, startRow);
+//			pstmt.setInt(2, size);
 			ResultSet rs = pstmt.executeQuery();
 			
 			while (rs.next()) {
-				Board board = new Board(rs.getInt("num"), rs.getString("writer"), 
+				Board board = new Board(rs.getInt("num"), 
 						rs.getString("title"), rs.getString("content"),
-						rs.getString("regtime"), rs.getInt("hits"));
+						rs.getString("regtime"), rs.getInt("hits"),rs.getInt("memberno"),rs.getString("name"));
 				list.add(board);
+				System.out.println(board);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -69,29 +72,31 @@ public class BoardDao {
 		return list;
 	}
 	
-	public ArrayList<Board> selectList() {
-		ArrayList<Board> list = new ArrayList<>();
-		String sql = "select * from board order by num desc";
-		PreparedStatement pstmt;
-		try {
-			pstmt = conn.prepareStatement(sql);
-			ResultSet rs = pstmt.executeQuery();
-			
-			while (rs.next()) {
-				Board board = new Board(rs.getInt("num"), rs.getString("writer"), 
-						rs.getString("title"), rs.getString("content"),
-						rs.getString("regtime"), rs.getInt("hits"));
-				list.add(board);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return list;
-	}
+	//
+//	public ArrayList<Board> selectList() {
+//		ArrayList<Board> list = new ArrayList<>();
+//		String sql = "select * from board order by num desc";
+//		PreparedStatement pstmt;
+//		try {
+//			pstmt = conn.prepareStatement(sql);
+//			ResultSet rs = pstmt.executeQuery();
+//			
+//			while (rs.next()) {
+//				Board board = new Board(rs.getInt("num"), rs.getString("writer"), 
+//						rs.getString("title"), rs.getString("content"),
+//						rs.getString("regtime"), rs.getInt("hits"));
+//				list.add(board);
+//			}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		return list;
+//	}
 	
+	//게시글을 조회하기 위해 불러오기 
 	public Board selectOne(int num, boolean inc) {
 		Board board = null;
-		String sql = "select * from board where num = ?";
+		String sql = "select b.*, m.name from board b left join member m on b.memberno = m.memberno where num = ? order by num desc";
 		PreparedStatement pstmt;
 		try {
 			pstmt = conn.prepareStatement(sql);
@@ -99,9 +104,9 @@ public class BoardDao {
 			ResultSet rs = pstmt.executeQuery();
 			
 			if (rs.next()) {
-				board = new Board(rs.getInt("num"), rs.getString("writer"), 
+				board = new Board(rs.getInt("num"), 
 						rs.getString("title"), rs.getString("content"),
-						rs.getString("regtime"), rs.getInt("hits"));
+						rs.getString("regtime"), rs.getInt("hits"),rs.getInt("memberno"), rs.getString("name"));
 
 			}
 			if (inc) {
@@ -114,6 +119,7 @@ public class BoardDao {
 		
 	}
 	
+	//게시글 삭제
 	public int delete(int num) {
 		int result = 0;
 		try ( 
@@ -129,19 +135,20 @@ public class BoardDao {
 		return result;
 	}
 	
-	public int insert(Board board) {
-		String sql = "insert into board(writer, title, content, regtime, hits) values (?,?,?,now(),0)";
+	//게시글 작성
+	public int insert(Board board, String id) {
+		String memberId = id;
+		String sql = "insert into board(num, title, content, regtime, hits, memberno) values (SEQ_BOARD.nextval,?,?,TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS'),0,(select m.memberno from member m where m.id = ?)";
 	    try ( 
 	        PreparedStatement pstmt = conn.prepareStatement(sql);            
 	    ) {
-	        // 현재 시간 얻기
+	        // 현재 시간 얻기 mysql = now() / oracle = sysdate
 //	        String curTime = LocalDate.now() + " " + 
 //	                         LocalTime.now().toString().substring(0, 8);
 	        
 	        // 쿼리 실행
-	    	pstmt.setString(1, board.getWriter());
-	    	pstmt.setString(2, board.getTitle());
-	    	pstmt.setString(3, board.getContent());
+	    	pstmt.setString(1, board.getTitle());
+	    	pstmt.setString(2, board.getContent());
 	        return pstmt.executeUpdate();
 	    
 	    } catch(Exception e) {
@@ -151,19 +158,14 @@ public class BoardDao {
 	}
 	
 	public int update(Board board) {
-        String sql = "update board set writer=?, title=?, content=?, regtime=now() where num=?";
+        String sql = "update board set title=?, content=?, regtime=TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS') where num=?";
 	    try ( 
 	        PreparedStatement pstmt = conn.prepareStatement(sql);            
 	    ) {
-	        // 현재 시간 얻기
-//	        String curTime = LocalDate.now() + " " + 
-//	                         LocalTime.now().toString().substring(0, 8);
-	        
-	        // 쿼리 실행
-	    	pstmt.setString(1, board.getWriter());
-	    	pstmt.setString(2, board.getTitle());
-	    	pstmt.setString(3, board.getContent());
-	    	pstmt.setInt(4, board.getNum());
+
+	    	pstmt.setString(1, board.getTitle());
+	    	pstmt.setString(2, board.getContent());
+	    	pstmt.setInt(3, board.getNum());
 	        return pstmt.executeUpdate();
 	    
 	    } catch(Exception e) {

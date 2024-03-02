@@ -17,36 +17,35 @@
 <table>
     <tr>
         <th>제목</th>
-        <td>${bd.title }</td>
+        <td>${board.title}</td>
     </tr>
     <tr>
         <th>작성자</th>
-        <td>${bd.writer}</td>
+        <td>${board.name}</td>
     </tr>
     <tr>
         <th>작성일시</th>
-        <td>${bd.regtime}</td>
+        <td>${board.regtime}</td>
     </tr>
     <tr>
         <th>조회수</th>
-        <td>${bd.hits}</td>
+        <td>${board.hits}</td>
     </tr>
     <tr>
         <th>내용</th>
-           
-        <td>${bd.content}</td> 
+        <td>${board.content}</td> 
     </tr>
 </table>
 
 <br>
-<input type="button" value="목록보기" onclick="location.href='list.do'">
-<input type="button" value="수정" onclick="location.href='write.do?num=${bd.num}'">
-<input type="button" value="삭제" onclick="myFunction1(${bd.num})">
+<input type="button" value="목록보기" onclick="location.href='boardList.do'">
+<input type="button" value="수정" onclick="location.href='boardWrite.do?num=${board.num}'">
+<input type="button" value="삭제" onclick="myFunction1(${board.num})">
        
 <script>
 function myFunction1(num) {
 	if (confirm("삭제하시겠습니까?")){
-	location.href = "delete.jsp?num=" + num;
+	location.href = "boardDelete.do?num=" + num;
 	}
 }
 

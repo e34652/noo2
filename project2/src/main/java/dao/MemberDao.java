@@ -47,7 +47,7 @@ public class MemberDao {
 //		}
 
 		public int selectCount() {  
-			// board 테이블의 총 건수를 리턴함
+			// 총 회원 수를 리턴함
 			String sql = "select count(*) from member";
 			PreparedStatement pstmt;
 			try {
@@ -55,7 +55,7 @@ public class MemberDao {
 				ResultSet rs = pstmt.executeQuery();
 				
 				if (rs.next()) {
-					return rs.getInt(1); // 첫번째 열의 Int값을 리턴
+					return rs.getInt(1); // 전체 회원 수를 리턴
 				}
 				
 			} catch (SQLException e) {
@@ -90,7 +90,7 @@ public class MemberDao {
 		
 		public Member selectMember(int memberno) {
 			Member member = null;
-			String sql = "select * from Member where memberno = ?";
+			String sql = "select * from member where memberno = ?";
 			PreparedStatement pstmt;
 
 			try {
@@ -112,12 +112,15 @@ public class MemberDao {
 		public ArrayList<Member> selectPage(int startRow, int size) {
 			ArrayList<Member> list = new ArrayList<>();
 			String sql = "SELECT * FROM MEMBER"; 
-			//(SELECT ROWNUM AS ROW_NUM, T.* FROM (SELECT * FROM MEMBER ORDER BY MEMBERNO DESC) T WHERE ROWNUM <= ?) WHERE ROW_NUM >= ?;
+//			String sql = "SELECT * FROM (SELECT ROWNUM rm, memberno FROM (SELECT memberno FROM member ORDER BY memberno)) WHERE rm BETWEEN 1 AND 5;";
+			
 			PreparedStatement pstmt;
 			try {
 				pstmt = conn.prepareStatement(sql);
-//				pstmt.setInt(1, size);
-//				pstmt.setInt(2, startRow);
+//				   pstmt.setInt(1, size * (startRow - 1) + 1); // 시작 행 번호 설정
+//			       pstmt.setInt(2, size * startRow); // 끝 행 번호 설정
+//				pstmt.setInt(1, startRow);
+//				pstmt.setInt(2, size);
 				
 				ResultSet rs = pstmt.executeQuery();
 				

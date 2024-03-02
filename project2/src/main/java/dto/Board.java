@@ -2,30 +2,58 @@ package dto;
 
 public class Board {
 	private int num;
-	private String writer;
 	private String title;
 	private String content;
-	private String regtime; 
+	private String regtime;
+	private String name;
 	private int hits;
+	private int memberno;
 	
 	
-	public Board(int num, String writer, String title, String content, String regtime) {
+	
+	public Board(int num,String title, String content) {
 		super();
 		this.num = num;
-		this.writer = writer;
+		this.title = title;
+		this.content = content;
+	
+	}
+	public Board(int num,String title, String content, String regtime, int memberno, String name) {
+		super();
+		this.num = num;
 		this.title = title;
 		this.content = content;
 		this.regtime = regtime;
+		this.memberno = memberno;
+		this.name = name;
 	}
 
-	public Board(int num, String writer, String title, String content, String regtime, int hits) {
+	public Board(int num, String title, String content, String regtime, int hits, int memberno, String name) {
 		super();
 		this.num = num;
-		this.writer = writer;
 		this.title = title;
 		this.content = content;
 		this.regtime = regtime;
 		this.hits = hits;
+		this.memberno = memberno;
+		this.name = name;
+	}
+
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getMemberno() {
+		return memberno;
+	}
+
+	public void setMemberno(int memberno) {
+		this.memberno = memberno;
 	}
 
 	public int getNum() {
@@ -34,14 +62,6 @@ public class Board {
 
 	public void setNum(int num) {
 		this.num = num;
-	}
-
-	public String getWriter() {
-		return writer;
-	}
-
-	public void setWriter(String writer) {
-		this.writer = writer;
 	}
 
 	public String getTitle() {
@@ -78,8 +98,8 @@ public class Board {
 
 	@Override
 	public String toString() {
-		return "Board [num=" + num + ", writer=" + writer + ", title=" + title + ", content=" + content + ", regtime="
-				+ regtime + ", hits=" + hits + "]";
+		return "Board [num=" + num + ", title=" + title + ", content=" + content + ", regtime=" + regtime + ", name="
+				+ name + ", hits=" + hits + ", memberno=" + memberno + "]";
 	}
-	
+
 }

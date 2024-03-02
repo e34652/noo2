@@ -2,12 +2,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%
-Member member = (Member)session.getAttribute("member");
-if (member == null) { 
-	response.sendRedirect("loginForm.do");
-}
-%>
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -22,42 +17,42 @@ if (member == null) {
     <tr>
         <th class="num"    >번호    </th>
         <th class="title"  >제목    </th>
-        <th class="writer" >작성자  </th>
+        <th class="name" >작성자  </th>
         <th class="regtime">작성일시</th>
         <th                >조회수  </th>
     </tr>
 
-<c:if test="${articlePage.hasNoArticles()}">
+<c:if test="${Article.hasNoArticles()}">
 	<tr>
 		<td colspan="4">게시글이 없습니다.</td>
 	</tr>
 </c:if>
-<c:forEach var="article" items="${articlePage.content}">
+<c:forEach var="board" items="${Article.contentB}">
 	<tr>
-		<td>${article.num}</td>
+		<td>${board.num}</td>
 		<td>
-		<a href="view.do?num=${article.num}">
-		<c:out value="${article.title}"/>
+		<a href="boardView.do?num=${board.num}">
+		<c:out value="${board.title}"/>
 		</a>
 		</td>
-		<td>${article.writer}</td>
-		<td>${article.regtime}</td>
-		<td>${article.hits}</td>
+		<td>${board.name}</td>
+		<td>${board.regtime}</td>
+		<td>${board.hits}</td>
 	</tr>
 </c:forEach>
-<c:if test="${articlePage.hasArticles()}">
+<c:if test="${Article.hasArticles()}">
 	<tr>
 		<td colspan="5">
-			<c:if test="${articlePage.startPage > 5}">
-			<a href="list.do?pageNo=${articlePage.startPage - 5}">[이전]</a>
+			<c:if test="${Article.startPage > 5}">
+			<a href="list.do?pageNo=${Article.startPage - 5}">[이전]</a>
 			</c:if>
 			<c:forEach var="pNo" 
-					   begin="${articlePage.startPage}" 
-					   end="${articlePage.endPage}">
+					   begin="${Article.startPage}" 
+					   end="${Article.endPage}">
 			<a href="list.do?pageNo=${pNo}">[${pNo}]</a>
 			</c:forEach>
-			<c:if test="${articlePage.endPage < articlePage.totalPages}">
-			<a href="list.do?pageNo=${articlePage.startPage + 5}">[다음]</a>
+			<c:if test="${Article.endPage < Article.totalPages}">
+			<a href="list.do?pageNo=${Article.startPage + 5}">[다음]</a>
 			</c:if>
 		</td>
 	</tr>
@@ -65,7 +60,7 @@ if (member == null) {
 </table>
 
 <br>
-<input type="button" value="글쓰기" class="btn btn-primary" onclick="location.href='write.do'">
+<input type="button" value="글쓰기" class="btn btn-primary" onclick="location.href='boardWrite.do'">
 
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>

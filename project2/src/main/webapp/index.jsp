@@ -24,16 +24,15 @@
                 <li><a href="a.jsp?name=홍길동">DEPARTMENT</a></li>
                 <li><a href="b.jsp?name=홍길동">GALLERY</a></li>
                 <li><a href="#">YOUTUBE</a></li>
-                <li><a href="bootstrap1.jsp">COMMUNITY</a></li>
+                <li><a href="boardList.do">COMMUNITY</a></li>
                 <li><a href="#">LOCATION</a></li>
             </ul>
 
             <ul class="util">
                 <li><a href="#">Contact</a></li>
                 <li><a href="#">Help</a></li>
-                <li><a href="memberLoginForm.jsp">Login</a></li>
-                <li><a href="#">Join</a></li>
-                <li><a href="list.jsp">admin</a></li>
+                <li><a href="memberLoginForm.do">Login</a></li>
+                <li><a href="#">Join</a></li> 
             </ul>
         </div>
     </header>
