@@ -13,7 +13,7 @@
 </head>
 <body>
 	<div class="container" style="padding-top: 50px">
-		<form action="memberInsert.do" method="post">
+		<form action="memberSignUp.do" method="post">
 			<div class="mb-3">
 				<label for="idInput" class="form-label">아이디</label> 
 				<input type="text" name="id" class="form-control" id="idInput" placeholder="아이디">

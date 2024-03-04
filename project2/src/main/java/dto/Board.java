@@ -16,7 +16,6 @@ public class Board {
 		this.num = num;
 		this.title = title;
 		this.content = content;
-	
 	}
 	public Board(int num,String title, String content, String regtime, int memberno, String name) {
 		super();

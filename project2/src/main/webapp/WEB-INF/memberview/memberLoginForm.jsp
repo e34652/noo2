@@ -174,7 +174,7 @@
 
 
 	<main class="form-signin w-100 m-auto">
-		<form action="memberLogin.do" method="get">
+		<form action="memberLogin.do" method="post">
 			<img class="mb-4" src="assets/brand/snapchat.svg" alt="" width="72"
 				height="57">
 			<h1 class="h3 mb-3 fw-normal">로그인</h1>

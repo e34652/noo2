@@ -13,7 +13,7 @@ import javax.servlet.http.HttpFilter;
 /**
  * Servlet Filter implementation class CharEncodingFilter
  */
-@WebFilter(filterName = "/CharEncodingFilter", urlPatterns = "/*")
+//@WebFilter(filterName = "/CharEncodingFilter", urlPatterns = "/*")
 public class CharEncodingFilter extends HttpFilter implements Filter {
        
 	private String encoding;

@@ -1,5 +1,6 @@
 package dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ArticlePage {
@@ -13,10 +14,6 @@ public class ArticlePage {
 	private int endPage;
 
 	//size: 한 페이지당 보여줄 게시글의 개수
-	public ArticlePage(int total, int currentPage, int size, List<Member> contentM) {
-	    this(total, currentPage, size, null, contentM);
-	}
-
 	public ArticlePage(int total, int currentPage, int size, List<Board> contentB, List<Member> contentM) {
 		this.total = total;
 		this.currentPage = currentPage;
@@ -74,6 +71,12 @@ public class ArticlePage {
 	}
 	public int getEndPage() {
 		return endPage;
+	}
+
+	@Override
+	public String toString() {
+		return "ArticlePage [total=" + total + ", currentPage=" + currentPage + ", contentB=" + contentB + ", contentM="
+				+ contentM + ", totalPages=" + totalPages + ", startPage=" + startPage + ", endPage=" + endPage + "]";
 	}
 	
 

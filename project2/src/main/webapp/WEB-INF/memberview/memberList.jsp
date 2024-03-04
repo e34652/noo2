@@ -22,7 +22,7 @@ request.setCharacterEncoding("UTF-8");
 <body>
 	<nav class="navbar navbar-expand-lg bg-body-tertiary">
 		<div class="container-fluid">
-			<a class="navbar-brand" href="#">Navbar</a>
+			<a class="navbar-brand" href="index.do">DCODLAB</a>
 			<button class="navbar-toggler" type="button"
 				data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
 				aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -32,20 +32,10 @@ request.setCharacterEncoding("UTF-8");
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 					<li class="nav-item"><a class="nav-link active"
-						aria-current="page" href="#">Home</a></li>
-					<li class="nav-item"><a class="nav-link" href="#">Link</a></li>
-					<li class="nav-item dropdown"><a
-						class="nav-link dropdown-toggle" href="#" role="button"
-						data-bs-toggle="dropdown" aria-expanded="false"> Dropdown </a>
-						<ul class="dropdown-menu">
-							<li><a class="dropdown-item" href="#">Action</a></li>
-							<li><a class="dropdown-item" href="#">Another action</a></li>
-							<li><hr class="dropdown-divider"></li>
-							<li><a class="dropdown-item" href="#">Something else
-									here</a></li>
-						</ul></li>
+						aria-current="page" href="boardList.do">게시판</a></li>
+
 					<li class="nav-item"><a class="nav-link disabled"
-						aria-disabled="true">Disabled</a></li>
+						aria-disabled="true">회원관리</a></li>
 				</ul>
 				<form class="d-flex" role="search">
 					<input class="form-control me-2" type="search" placeholder="Search"
@@ -57,59 +47,55 @@ request.setCharacterEncoding("UTF-8");
 	</nav>
 	<div class="container" style="padding-top: 50px">
 		<table class="table table-bordered table-hover">
-			
-				<tr>
-					<th scope="col">Memberno</th>
-					<th scope="col">ID</th>
-					<th scope="col">Email</th>
-					<th scope="col">Name</th>
-					<th scope="col">Actions</th>
-				</tr>
-			
-		
-				<c:if test="${Article.hasNoArticles()}">
-					<tr>
-						<td colspan="4">게시글이 없습니다.</td>
-					</tr>
-				</c:if>
-				<c:forEach var="member" items="${Article.contentM}">
-					<tr>
-						<td>${member.memberno}</td>
-						<td><a href="view.do?num=${member.memberno}"><c:out
-									value="${member.id}" /></a></td>
-						<td>${member.email}</td>
-						<td>${member.name}</td>
-						<td><a href="memberUpdateForm.do?memberno=${member.memberno}">수정</a>
-							<a href="memberDelete.do?memberno=${member.memberno}"
-							class="btn btn-warning">삭제</a></td>
-					</tr>
-				</c:forEach>
-		
-	</div>
 
-	<div class="container">
-		<c:if test="${Article.hasArticles()}">
 			<tr>
-				<td colspan="5">
-					<c:if test="${Article.startPage > 5}">
-						<a href="memberList.do?pageNo=${Article.startPage - 5}">[이전]</a>
-					</c:if> 
-					
-					<c:forEach var="pNo" begin="${Article.startPage}"
-						end="${Article.endPage}">
-						<a href="memberList.do?pageNo=${pNo}">[${pNo}]</a>
-					</c:forEach> 
-					
-					<c:if test="${Article.endPage < Article.totalPages}">
-						<a href="memberList.do?pageNo=${Article.startPage + 5}">[다음]</a>
-					</c:if></td>
+				<th scope="col">Memberno</th>
+				<th scope="col">ID</th>
+				<th scope="col">Email</th>
+				<th scope="col">Name</th>
+				<th scope="col">Actions</th>
 			</tr>
-		</c:if>
 
+
+			<c:if test="${ArticleM.hasNoArticles()}">
+				<tr>
+					<td colspan="4">게시글이 없습니다.</td>
+				</tr>
+			</c:if>
+			<c:forEach var="member" items="${ArticleM.contentM}">
+				<tr>
+					<td>${member.memberno}</td>
+					<td><c:out value="${member.id}" /></td>
+					<td>${member.email}</td>
+					<td>${member.name}</td>
+					<td>
+						<a href="memberDelete.do?memberno=${member.memberno}"
+								class="btn btn-warning">삭제</a>
+								
+						<a href="memberUpdateForm.do?memberno=${member.memberno}"
+								class="btn btn-warning">수정</a> 
+					</td>
+				</tr>
+			</c:forEach>
+
+			<c:if test="${ArticleM.hasArticles()}">
+				<tr>
+					<td colspan="5"><c:if test="${ArticleM.startPage > 5}">
+							<a href="memberList.do?pageNo=${ArticleM.startPage - 5}">[이전]</a>
+						</c:if> <c:forEach var="pNo" begin="${ArticleM.startPage}"
+							end="${ArticleM.endPage}">
+							<a href="memberList.do?pageNo=${pNo}">[${pNo}]</a>
+						</c:forEach> <c:if test="${ArticleM.endPage < ArticleM.totalPages}">
+							<a href="memberList.do?pageNo=${ArticleM.startPage + 5}">[다음]</a>
+						</c:if></td>
+				</tr>
+			</c:if>
+
+
+		</table>
+
+		<button class="btn btn-secondary" onclick="move()">회원 등록</button>
 	</div>
-	</table>
-	<button class="btn btn-secondary" onclick="move()">회원 등록</button>
-
 
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
@@ -118,7 +104,7 @@ request.setCharacterEncoding("UTF-8");
 
 	<script>
 		function move() {
-			location.href = "memberSignUpForm.do";
+			location.href = "memberInsertForm.do";
 		}
 		function addRow(conent) {
 			let table = document.getElementById("myTable");
